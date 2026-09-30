@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b1020" />
+    <meta
+      name="description"
+      content="Mind Palace turns study notes into a walkable VR/AR memory palace (method of loci) with spaced repetition."
+    />
+    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <title>Mind Palace</title>
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="stage" tabindex="0" aria-label="3D memory palace"></canvas>
+      <div id="ui">
+        <div class="splash">
+          <div class="splash-orb"></div>
+          <p>Mind Palace</p>
+        </div>
+      </div>
+    </div>
+    <noscript>Mind Palace needs JavaScript (and WebGL) to run.</noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

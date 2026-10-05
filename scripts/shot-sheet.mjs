@@ -5,7 +5,12 @@ import { chromium } from '@playwright/test';
 const [port, query = '', out = 'shots/sheet.png', w = '1400', h = '900'] = process.argv.slice(2);
 const browser = await chromium.launch({
   channel: process.env.PW_CHANNEL || 'chrome',
-  args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
+  args: [
+    '--use-gl=angle',
+    '--use-angle=swiftshader',
+    '--enable-unsafe-swiftshader',
+    '--ignore-gpu-blocklist',
+  ],
 });
 const page = await browser.newPage({ viewport: { width: Number(w), height: Number(h) } });
 const errors = [];

@@ -1,15 +1,6 @@
 /** All sound is synthesised with WebAudio – no audio files. */
 export type SfxName =
-  | 'click'
-  | 'chime'
-  | 'wrong'
-  | 'pickup'
-  | 'place'
-  | 'restore'
-  | 'success'
-  | 'whoosh'
-  | 'tick'
-  | 'sparkle';
+  'click' | 'chime' | 'wrong' | 'pickup' | 'place' | 'restore' | 'success' | 'whoosh' | 'tick' | 'sparkle';
 
 type ACtor = typeof AudioContext;
 
@@ -44,7 +35,14 @@ class Sfx {
     if (this.master) this.master.gain.value = m ? 0 : 0.5;
   }
 
-  private tone(freq: number, dur: number, type: OscillatorType, vol: number, delay = 0, slideTo?: number): void {
+  private tone(
+    freq: number,
+    dur: number,
+    type: OscillatorType,
+    vol: number,
+    delay = 0,
+    slideTo?: number,
+  ): void {
     const c = this.ctx;
     if (!c || !this.master || this.muted) return;
     const t0 = c.currentTime + delay;

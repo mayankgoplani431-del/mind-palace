@@ -12,7 +12,11 @@ const good = {
       keywords: ['proton', 'electron'],
       objectKey: 'atom',
       mnemonic: 'A tiny solar system spins on the pedestal.',
-      quiz: { question: 'What is the basic unit of matter?', options: ['Atom', 'Cell', 'Star', 'Wave'], answerIndex: 0 },
+      quiz: {
+        question: 'What is the basic unit of matter?',
+        options: ['Atom', 'Cell', 'Star', 'Wave'],
+        answerIndex: 0,
+      },
     },
   ],
 };

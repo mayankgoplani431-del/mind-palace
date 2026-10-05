@@ -152,7 +152,8 @@ export class ObjectInstance {
     const fresh = f > 0.85 ? (f - 0.85) / 0.15 : 0;
     const shimmer = 0.75 + 0.25 * Math.sin(this.time * 2 + this.phase);
     const glow = fresh * 0.22 * shimmer + this.highlight * 0.45 + this.boost * 1.1;
-    const changed = force || Math.abs(f - this.shownFreshness) > 0.002 || Math.abs(glow - this.shownGlow) > 0.004;
+    const changed =
+      force || Math.abs(f - this.shownFreshness) > 0.002 || Math.abs(glow - this.shownGlow) > 0.004;
     if (!changed) return;
     this.shownFreshness = f;
     this.shownGlow = glow;
@@ -183,14 +184,20 @@ export class ObjectInstance {
       const seed = new Float32Array(n * 3);
       for (let i = 0; i < n; i++) {
         const a = (i * 2.399963) % (Math.PI * 2);
-        const r = 0.18 + ((i * 37) % 10) / 10 * 0.32;
+        const r = 0.18 + (((i * 37) % 10) / 10) * 0.32;
         seed[i * 3] = a;
         seed[i * 3 + 1] = r;
         seed[i * 3 + 2] = ((i * 53) % 17) / 17;
       }
       const g = new THREE.BufferGeometry();
       g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-      const pm = new THREE.PointsMaterial({ color: 0xc9b89a, size: 0.035, transparent: true, depthWrite: false, opacity: 0.7 });
+      const pm = new THREE.PointsMaterial({
+        color: 0xc9b89a,
+        size: 0.035,
+        transparent: true,
+        depthWrite: false,
+        opacity: 0.7,
+      });
       this.dust = new THREE.Points(g, pm);
       this.dust.frustumCulled = false;
       this.dustSeed = seed;

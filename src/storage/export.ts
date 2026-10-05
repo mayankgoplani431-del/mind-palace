@@ -52,7 +52,8 @@ export function parsePalaceFile(text: string): { palace: PalaceData; cards?: Rec
   const parsed = palaceSchema.safeParse(candidate);
   if (!parsed.success) throw new ImportError('This file is not a valid Mind Palace export.');
   const out: { palace: PalaceData; cards?: Record<string, Card> } = { palace: parsed.data as PalaceData };
-  if (obj.format === FORMAT && obj.cards && typeof obj.cards === 'object') out.cards = obj.cards as Record<string, Card>;
+  if (obj.format === FORMAT && obj.cards && typeof obj.cards === 'object')
+    out.cards = obj.cards as Record<string, Card>;
   return out;
 }
 

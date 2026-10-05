@@ -27,7 +27,12 @@ export function font(px: number, weight = 700): string {
   return `${weight} ${px}px ${FONT_STACK}`;
 }
 
-export function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number, maxLines: number): string[] {
+export function wrapText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number,
+  maxLines: number,
+): string[] {
   const words = text.split(/\s+/).filter(Boolean);
   const lines: string[] = [];
   let cur = '';
@@ -81,7 +86,7 @@ export function drawLabel(text: string, o: LabelOpts = {}): HTMLCanvasElement {
   ctx.font = font(px);
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'center';
-  ctx.fillStyle = o.color ?? '#ffffff';
+  ctx.fillStyle = o.color ?? '#e9edff';
   const padL = o.badge ? H * 0.9 : 28;
   const lines = wrapText(ctx, text, W - padL - 28, o.maxLines ?? 2);
   const lh = px * 1.22;
@@ -104,9 +109,15 @@ export function makeLabelSprite(text: string, o: LabelOpts = {}): THREE.Sprite {
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 4;
-  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, fog: false });
+  const mat = new THREE.SpriteMaterial({
+    map: tex,
+    transparent: true,
+    depthWrite: false,
+    fog: false,
+    toneMapped: false,
+  });
   const s = new THREE.Sprite(mat);
-  const h = o.worldHeight ?? 0.34;
+  const h = o.worldHeight ?? 0.46;
   s.scale.set((h * canvas.width) / canvas.height, h, 1);
   s.renderOrder = 10;
   return s;

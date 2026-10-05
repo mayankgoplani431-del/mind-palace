@@ -23,7 +23,13 @@ export const anthropicComplete: Complete = async (cfg, system, user, f, signal) 
       max_tokens: 4096,
       system,
       messages: [{ role: 'user', content: user }],
-      tools: [{ name: 'emit_palace', description: 'Emit the extracted concepts as JSON.', input_schema: EXTRACT_JSON_SCHEMA }],
+      tools: [
+        {
+          name: 'emit_palace',
+          description: 'Emit the extracted concepts as JSON.',
+          input_schema: EXTRACT_JSON_SCHEMA,
+        },
+      ],
       tool_choice: { type: 'tool', name: 'emit_palace' },
     }),
   });

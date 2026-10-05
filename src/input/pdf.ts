@@ -61,7 +61,10 @@ export async function extractPdfText(data: ArrayBuffer, maxPages = 60): Promise<
   }
   const text = pages.join('\n\n').trim();
   if (text.replace(/\s+/g, '').length < 20) {
-    throw new NotesError('empty-pdf', 'No readable text found in this PDF (scanned images are not supported). Paste the text instead.');
+    throw new NotesError(
+      'empty-pdf',
+      'No readable text found in this PDF (scanned images are not supported). Paste the text instead.',
+    );
   }
   return text;
 }

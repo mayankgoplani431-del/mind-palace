@@ -98,7 +98,9 @@ export class DesktopControls implements MoveProvider {
     if (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
     this.onFirstGesture();
     const k = e.key.toLowerCase();
-    if (['w', 'a', 's', 'd', 'q', 'e', 'shift', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)) {
+    if (
+      ['w', 'a', 's', 'd', 'q', 'e', 'shift', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)
+    ) {
       this.keys.add(k);
       if (k.startsWith('arrow')) e.preventDefault();
     }

@@ -20,6 +20,12 @@ export const geminiComplete: Complete = async (cfg, system, user, f, signal) => 
   });
   const data = (await res.json()) as GeminiResponse;
   const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('');
-  if (!text) throw new LlmError('parse', data.promptFeedback?.blockReason ? `Gemini blocked the prompt (${data.promptFeedback.blockReason}).` : 'Gemini returned an empty response.');
+  if (!text)
+    throw new LlmError(
+      'parse',
+      data.promptFeedback?.blockReason
+        ? `Gemini blocked the prompt (${data.promptFeedback.blockReason}).`
+        : 'Gemini returned an empty response.',
+    );
   return text;
 };

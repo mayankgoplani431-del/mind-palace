@@ -76,9 +76,18 @@ export const THEMES: Record<StyleKey, ThemeDef> = {
 export type RoomKind = 'science' | 'history' | 'nature' | 'library' | 'generic';
 
 const KIND_RE: Array<[RoomKind, RegExp]> = [
-  ['science', /physic|chemi|science|atom|energy|force|electric|magnet|wave|भौतिक|रसायन|विज्ञान|ऊर्जा|विद्युत|चुंबक|चुंबकीय|लहर|तरंग/i],
-  ['history', /histor|empire|war\b|king|dynast|revolution|freedom|independ|fort|इतिहास|साम्राज्य|युद्ध|राजा|स्वातंत्र्य|स्वतंत्रता|मराठ|पेशव|किल्ल|लढा|क्रांति|शिवाजी/i],
-  ['nature', /biolog|plant|cell|animal|ecosystem|nature|geograph|environment|human body|जीव|वनस्पती|पौधे|कोशिका|प्राणी|निसर्ग|भूगोल|पर्यावरण|शरीर|आनुवंशिक/i],
+  [
+    'science',
+    /physic|chemi|science|atom|energy|force|electric|magnet|wave|भौतिक|रसायन|विज्ञान|ऊर्जा|विद्युत|चुंबक|चुंबकीय|लहर|तरंग/i,
+  ],
+  [
+    'history',
+    /histor|empire|war\b|king|dynast|revolution|freedom|independ|fort|इतिहास|साम्राज्य|युद्ध|राजा|स्वातंत्र्य|स्वतंत्रता|मराठ|पेशव|किल्ल|लढा|क्रांति|शिवाजी/i,
+  ],
+  [
+    'nature',
+    /biolog|plant|cell|animal|ecosystem|nature|geograph|environment|human body|जीव|वनस्पती|पौधे|कोशिका|प्राणी|निसर्ग|भूगोल|पर्यावरण|शरीर|आनुवंशिक/i,
+  ],
   ['library', /literature|grammar|poem|language|novel|author|साहित्य|व्याकरण|कविता|भाषा/i],
 ];
 

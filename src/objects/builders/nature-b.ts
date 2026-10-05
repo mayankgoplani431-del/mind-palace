@@ -746,7 +746,14 @@ const crystal: ObjectDef = {
       col: number,
       glow: number,
     ): void => {
-      const m = mat(col, { rough: 0.3, metal: 0.05, flat: true, emissive: col, glow: glow * 0.55, opacity: 0.88 });
+      const m = mat(col, {
+        rough: 0.3,
+        metal: 0.05,
+        flat: true,
+        emissive: col,
+        glow: glow * 0.55,
+        opacity: 0.88,
+      });
       const c = grp(
         mesh(geo.cyl(r * 0.92, r, h * 0.7, 6), m, [0, h * 0.35, 0]),
         mesh(geo.cone(r * 0.92, h * 0.3, 6), m, [0, h * 0.7 + h * 0.15, 0]),

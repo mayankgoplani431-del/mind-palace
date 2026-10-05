@@ -55,7 +55,10 @@ describe('freshness', () => {
     expect(freshness(long, long.due + 5 * DAY_MS)).toBeCloseTo(0.5);
   });
   it('time travel +7 days fades a day-old card completely and creates quests', () => {
-    const cards = new Map([['a', newCard('a', T0)], ['b', review(newCard('b', T0), 'easy', T0)]]);
+    const cards = new Map([
+      ['a', newCard('a', T0)],
+      ['b', review(newCard('b', T0), 'easy', T0)],
+    ]);
     expect(refreshQuests(cards, T0)).toHaveLength(0);
     const later = T0 + 7 * DAY_MS;
     const q = refreshQuests(cards, later);

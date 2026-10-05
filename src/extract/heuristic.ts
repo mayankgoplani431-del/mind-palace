@@ -26,7 +26,8 @@ function stem(tok: string): string {
   const t = tok.toLowerCase();
   if (isDev(t)) return t;
   if (t.length > 4 && t.endsWith('ies')) return t.slice(0, -3) + 'y';
-  if (t.length > 3 && t.endsWith('s') && !t.endsWith('ss') && !t.endsWith('us') && !t.endsWith('is')) return t.slice(0, -1);
+  if (t.length > 3 && t.endsWith('s') && !t.endsWith('ss') && !t.endsWith('us') && !t.endsWith('is'))
+    return t.slice(0, -1);
   return t;
 }
 
@@ -36,11 +37,12 @@ interface Derived {
   def: boolean;
 }
 
-const EN_SKIP_START = /^(it|this|that|these|those|they|he|she|we|there|which|who|when|where|what|in|on|at|for|if|as|after|before|during|with|by)\b/i;
+const EN_SKIP_START =
+  /^(it|this|that|these|those|they|he|she|we|there|which|who|when|where|what|in|on|at|for|if|as|after|before|during|with|by)\b/i;
 
 function cleanTitle(t: string, lang: Lang): string {
   let s = t
-    .replace(/^[\s"'“”‘’(\[]+|[\s"'“”‘’)\],.;:।॥-]+$/g, '')
+    .replace(/^[\s"'“”‘’([]+|[\s"'“”‘’)\],.;:।॥-]+$/g, '')
     .replace(/^(the|a|an)\s+/i, '')
     .trim();
   if (wordCount(s) > 8) s = s.split(/\s+/).slice(0, 8).join(' ');
@@ -58,7 +60,10 @@ function deriveTitle(sentence: string, lang: Lang, tf: Map<string, number>): Der
   }
 
   if (lang === 'en') {
-    const b = /^(.{2,60}?)\s+(?:is|are|was|were|refers to|means|describes|states|can be defined as|is called|are called)\s+(.+)$/i.exec(s);
+    const b =
+      /^(.{2,60}?)\s+(?:is|are|was|were|refers to|means|describes|states|can be defined as|is called|are called)\s+(.+)$/i.exec(
+        s,
+      );
     if (b && !EN_SKIP_START.test(b[1] as string) && wordCount(b[1] as string) <= 6) {
       return { title: cleanTitle(b[1] as string, lang), rest: s, def: true };
     }
@@ -229,7 +234,15 @@ export function extractHeuristic(text: string, opts: HeuristicOptions): ExtractR
     const wc = wordCount(u.text);
     if (wc < 5) score -= 1;
     if (wc > 45) score -= 1;
-    return { idx, text: u.text, title: d.title, summary: clipWords(d.rest, 25), def: d.def, tokens: [...uniq], score };
+    return {
+      idx,
+      text: u.text,
+      title: d.title,
+      summary: clipWords(d.rest, 25),
+      def: d.def,
+      tokens: [...uniq],
+      score,
+    };
   });
 
   const target = cands.length <= MAX_CONCEPTS_PER_ROOM ? cands.length : MAX_CONCEPTS_PER_ROOM;
@@ -253,12 +266,22 @@ export function extractHeuristic(text: string, opts: HeuristicOptions): ExtractR
       (x, y) => (tf.get(stem(y)) ?? 0) - (tf.get(stem(x)) ?? 0),
     );
     const keywords = ranked.filter((t) => !titleToks.has(stem(t))).slice(0, 4);
-    if (keywords.length < 2) keywords.push(...tokenize(c.title).filter((t) => isContent(t, lang)).slice(0, 2));
+    if (keywords.length < 2)
+      keywords.push(
+        ...tokenize(c.title)
+          .filter((t) => isContent(t, lang))
+          .slice(0, 2),
+      );
     if (keywords.length === 0) keywords.push(c.title);
     return keywords;
   });
   const keys = assignObjects(
-    chosen.map((c, i) => ({ title: c.title, keywords: kws[i] as string[], sentence: c.text, salt: `${prefix}${i}${c.title}` })),
+    chosen.map((c, i) => ({
+      title: c.title,
+      keywords: kws[i] as string[],
+      sentence: c.text,
+      salt: `${prefix}${i}${c.title}`,
+    })),
     lang,
   );
   const concepts: Concept[] = chosen.map((c, i) => {
@@ -285,7 +308,11 @@ export function extractHeuristic(text: string, opts: HeuristicOptions): ExtractR
       ...concepts.filter((o) => o !== c).flatMap((o) => o.keywords.slice(0, 1)),
     ];
     const { options, answerIndex } = makeQuizOptions(c.title, pool, lang, `${prefix}${c.id}quiz`);
-    c.quiz = { question: `${QUESTION[lang]} “${clipWords(mask(c.summary, c.title), 20)}”`, options, answerIndex };
+    c.quiz = {
+      question: `${QUESTION[lang]} “${clipWords(mask(c.summary, c.title), 20)}”`,
+      options,
+      answerIndex,
+    };
   }
 
   const topic =

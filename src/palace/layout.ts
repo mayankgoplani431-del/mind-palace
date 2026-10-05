@@ -107,7 +107,8 @@ export function computeLayout(lociPerRoom: number[], seed: number): Layout {
 }
 
 /** Which region of the palace a point is in: -1 foyer, 0..n-1 room index, 'hall' for corridors, null outside. */
-export type Region = { kind: 'foyer' } | { kind: 'room'; index: number } | { kind: 'corridor'; index: number } | null;
+export type Region =
+  { kind: 'foyer' } | { kind: 'room'; index: number } | { kind: 'corridor'; index: number } | null;
 
 function inCorridor(c: Corridor, x: number, z: number, margin: number): boolean {
   const dx = Math.sin(c.heading);
@@ -122,7 +123,8 @@ function inCorridor(c: Corridor, x: number, z: number, margin: number): boolean 
 export function regionAt(layout: Layout, x: number, z: number, margin = 0): Region {
   if (Math.hypot(x, z) <= layout.foyer.radius - margin) return { kind: 'foyer' };
   for (const r of layout.rooms) {
-    if (Math.hypot(x - r.center.x, z - r.center.z) <= r.radius - margin) return { kind: 'room', index: r.index };
+    if (Math.hypot(x - r.center.x, z - r.center.z) <= r.radius - margin)
+      return { kind: 'room', index: r.index };
   }
   for (let i = 0; i < layout.corridors.length; i++) {
     if (inCorridor(layout.corridors[i] as Corridor, x, z, margin)) return { kind: 'corridor', index: i };

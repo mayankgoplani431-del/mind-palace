@@ -35,7 +35,10 @@ export interface ExamResult {
 /** Deterministic per-concept shuffle of the options so the answer isn't always where the author put it. */
 export function shuffleQuiz(quiz: Quiz, seed: string): Quiz {
   const rng = mulberry32(hashString(seed));
-  const idx = shuffled(quiz.options.map((_, i) => i), rng);
+  const idx = shuffled(
+    quiz.options.map((_, i) => i),
+    rng,
+  );
   return {
     question: quiz.question,
     options: idx.map((i) => quiz.options[i] as string),
@@ -43,8 +46,15 @@ export function shuffleQuiz(quiz: Quiz, seed: string): Quiz {
   };
 }
 
-export function buildQuestions(route: Array<Pick<Concept, 'id' | 'title' | 'quiz'>>, seed: number): ExamQuestion[] {
-  return route.map((c) => ({ conceptId: c.id, title: c.title, quiz: shuffleQuiz(c.quiz, `${seed}:${c.id}`) }));
+export function buildQuestions(
+  route: Array<Pick<Concept, 'id' | 'title' | 'quiz'>>,
+  seed: number,
+): ExamQuestion[] {
+  return route.map((c) => ({
+    conceptId: c.id,
+    title: c.title,
+    quiz: shuffleQuiz(c.quiz, `${seed}:${c.id}`),
+  }));
 }
 
 /** Total time budget: answer time per question plus the walk along the route. */
@@ -61,8 +71,12 @@ export class ExamSession {
   constructor(
     readonly questions: ExamQuestion[],
     readonly limitSec: number,
-    readonly startedAt: number,
+    public startedAt: number,
   ) {}
+
+  begin(now: number): void {
+    this.startedAt = now;
+  }
 
   get current(): ExamQuestion | null {
     return this.finishedAt === null ? (this.questions[this.index] ?? null) : null;
@@ -89,7 +103,12 @@ export class ExamSession {
     const q = this.current;
     if (!q) return false;
     const correct = chosen === q.quiz.answerIndex;
-    this.answers.push({ conceptId: q.conceptId, chosen, correct, ms: Math.max(0, now - this.questionShownAt) });
+    this.answers.push({
+      conceptId: q.conceptId,
+      chosen,
+      correct,
+      ms: Math.max(0, now - this.questionShownAt),
+    });
     this.index += 1;
     if (this.index >= this.questions.length) this.finishedAt = now;
     return correct;

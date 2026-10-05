@@ -22,8 +22,14 @@ export async function loadNotesFile(file: File): Promise<string> {
       const { extractPdfText } = await import('./pdf');
       return await extractPdfText(await file.arrayBuffer());
     }
-    if (name.endsWith('.txt') || name.endsWith('.md') || name.endsWith('.markdown') || file.type.startsWith('text/')) {
-      const text = (await file.text()).replace(/^﻿/, '');
+    if (
+      name.endsWith('.txt') ||
+      name.endsWith('.md') ||
+      name.endsWith('.markdown') ||
+      file.type.startsWith('text/')
+    ) {
+      const raw = await file.text();
+      const text = raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw;
       if (!text.trim()) throw new NotesError('too-short', 'The file is empty.');
       return text;
     }

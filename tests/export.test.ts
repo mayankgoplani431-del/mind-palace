@@ -6,7 +6,10 @@ import { newCard } from '../src/learn/srs';
 
 describe('export / import', () => {
   it('round-trips a palace through JSON and the share link', async () => {
-    const { palace } = await buildPalace(SAMPLES[0]!.text, { langChoice: 'auto', engine: { kind: 'heuristic' } });
+    const { palace } = await buildPalace(SAMPLES[0]!.text, {
+      langChoice: 'auto',
+      engine: { kind: 'heuristic' },
+    });
     const cards = { [palace.rooms[0]!.concepts[0]!.id]: newCard('x', 1) };
     const parsed = parsePalaceFile(exportPalace(palace, cards));
     expect(parsed.palace).toEqual(palace);

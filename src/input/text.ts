@@ -123,7 +123,8 @@ export function toUnits(raw: string): Unit[] {
 
   const flush = (): void => {
     if (!pending) return;
-    for (const s of splitSentences(pending.text)) units.push({ text: s, kind: 'sentence', bold: pending.bold, para });
+    for (const s of splitSentences(pending.text))
+      units.push({ text: s, kind: 'sentence', bold: pending.bold, para });
     pending = null;
   };
 
@@ -182,5 +183,10 @@ export function wordCount(s: string): number {
 export function clipWords(s: string, max: number): string {
   const w = s.trim().split(/\s+/);
   if (w.length <= max) return s.trim();
-  return w.slice(0, max).join(' ').replace(/[,;:।-]+$/, '') + '…';
+  return (
+    w
+      .slice(0, max)
+      .join(' ')
+      .replace(/[,;:।-]+$/, '') + '…'
+  );
 }

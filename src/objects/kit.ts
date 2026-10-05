@@ -92,7 +92,8 @@ export function isSharedGeometry(g: THREE.BufferGeometry): boolean {
 const r = (n: number): string => n.toFixed(4);
 
 export const geo = {
-  box: (w: number, h: number, d: number) => cached(`box${r(w)},${r(h)},${r(d)}`, () => new THREE.BoxGeometry(w, h, d)),
+  box: (w: number, h: number, d: number) =>
+    cached(`box${r(w)},${r(h)},${r(d)}`, () => new THREE.BoxGeometry(w, h, d)),
   sphere: (rad: number, ws = 32, hs = 20) =>
     cached(`sph${r(rad)},${ws},${hs}`, () => new THREE.SphereGeometry(rad, ws, hs)),
   cyl: (rt: number, rb: number, h: number, seg = 32) =>
@@ -101,15 +102,21 @@ export const geo = {
     cached(`cone${r(rad)},${r(h)},${seg}`, () => new THREE.ConeGeometry(rad, h, seg)),
   torus: (R: number, rad: number, rs = 16, ts = 48) =>
     cached(`tor${r(R)},${r(rad)},${rs},${ts}`, () => new THREE.TorusGeometry(R, rad, rs, ts)),
-  capsule: (rad: number, len: number) => cached(`cap${r(rad)},${r(len)}`, () => new THREE.CapsuleGeometry(rad, len, 8, 20)),
+  capsule: (rad: number, len: number) =>
+    cached(`cap${r(rad)},${r(len)}`, () => new THREE.CapsuleGeometry(rad, len, 8, 20)),
   plane: (w: number, h: number) => cached(`pl${r(w)},${r(h)}`, () => new THREE.PlaneGeometry(w, h)),
-  ring: (ri: number, ro: number, seg = 48) => cached(`ring${r(ri)},${r(ro)},${seg}`, () => new THREE.RingGeometry(ri, ro, seg)),
+  ring: (ri: number, ro: number, seg = 48) =>
+    cached(`ring${r(ri)},${r(ro)},${seg}`, () => new THREE.RingGeometry(ri, ro, seg)),
   dodeca: (rad: number) => cached(`dod${r(rad)}`, () => new THREE.DodecahedronGeometry(rad)),
   octa: (rad: number) => cached(`oct${r(rad)}`, () => new THREE.OctahedronGeometry(rad)),
-  icosa: (rad: number, detail = 0) => cached(`ico${r(rad)},${detail}`, () => new THREE.IcosahedronGeometry(rad, detail)),
+  icosa: (rad: number, detail = 0) =>
+    cached(`ico${r(rad)},${detail}`, () => new THREE.IcosahedronGeometry(rad, detail)),
   /** Half sphere (dome) – top half of a sphere. */
   dome: (rad: number, seg = 32) =>
-    cached(`dome${r(rad)},${seg}`, () => new THREE.SphereGeometry(rad, seg, 16, 0, Math.PI * 2, 0, Math.PI / 2)),
+    cached(
+      `dome${r(rad)},${seg}`,
+      () => new THREE.SphereGeometry(rad, seg, 16, 0, Math.PI * 2, 0, Math.PI / 2),
+    ),
   /** Lathe profile: points are [radius, y] pairs, bottom to top. NOT cached. */
   lathe: (pts: Array<[number, number]>, seg = 40) =>
     new THREE.LatheGeometry(

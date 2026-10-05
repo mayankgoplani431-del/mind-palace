@@ -41,9 +41,11 @@ export async function httpError(res: Response): Promise<LlmError> {
     /* body not JSON */
   }
   const tail = detail ? `: ${detail.slice(0, 200)}` : '';
-  if (res.status === 401 || res.status === 403) return new LlmError('auth', `API key rejected (HTTP ${res.status})${tail}`);
+  if (res.status === 401 || res.status === 403)
+    return new LlmError('auth', `API key rejected (HTTP ${res.status})${tail}`);
   if (res.status === 429) return new LlmError('rate', `Rate limit or quota reached (HTTP 429)${tail}`);
-  if (res.status === 400 || res.status === 404) return new LlmError('bad-request', `Request rejected (HTTP ${res.status})${tail}`);
+  if (res.status === 400 || res.status === 404)
+    return new LlmError('bad-request', `Request rejected (HTTP ${res.status})${tail}`);
   return new LlmError('server', `Provider error (HTTP ${res.status})${tail}`);
 }
 
@@ -52,14 +54,22 @@ export async function safeFetch(f: Fetch, url: string, init: RequestInit): Promi
   try {
     res = await f(url, init);
   } catch (e) {
-    if (e instanceof DOMException && e.name === 'AbortError') throw new LlmError('network', 'The request timed out or was cancelled.');
-    throw new LlmError('network', 'Network error – check your connection (or the browser blocked the request).');
+    if (e instanceof DOMException && e.name === 'AbortError')
+      throw new LlmError('network', 'The request timed out or was cancelled.');
+    throw new LlmError(
+      'network',
+      'Network error – check your connection (or the browser blocked the request).',
+    );
   }
   if (!res.ok) throw await httpError(res);
   return res;
 }
 
-export const LANG_NAME: Record<Lang, string> = { en: 'English', hi: 'Hindi (Devanagari)', mr: 'Marathi (Devanagari)' };
+export const LANG_NAME: Record<Lang, string> = {
+  en: 'English',
+  hi: 'Hindi (Devanagari)',
+  mr: 'Marathi (Devanagari)',
+};
 
 export function systemPrompt(lang: Lang): string {
   const catalogue = OBJECTS.map((o) => `${o.key} (${o.name.en})`).join(', ');
@@ -117,7 +127,13 @@ export const EXTRACT_JSON_SCHEMA = {
 } as const;
 
 /** A provider call: returns the model's raw JSON text for (system, user). */
-export type Complete = (cfg: LlmConfig, system: string, user: string, f: Fetch, signal: AbortSignal) => Promise<string>;
+export type Complete = (
+  cfg: LlmConfig,
+  system: string,
+  user: string,
+  f: Fetch,
+  signal: AbortSignal,
+) => Promise<string>;
 
 export class LlmExtractor implements ConceptExtractor {
   readonly name: string;
@@ -152,7 +168,10 @@ export class LlmExtractor implements ConceptExtractor {
         const v = validateExtract(repaired);
         if (v.ok) {
           const prefix = opts.idPrefix ?? '';
-          return { ...v.value, concepts: v.value.concepts.map((c, i) => ({ ...c, id: `${prefix}c${i + 1}` })) };
+          return {
+            ...v.value,
+            concepts: v.value.concepts.map((c, i) => ({ ...c, id: `${prefix}c${i + 1}` })),
+          };
         }
         lastErr = v.error;
       } catch (e) {

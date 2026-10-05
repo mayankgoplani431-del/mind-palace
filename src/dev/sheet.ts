@@ -46,7 +46,10 @@ list.forEach((def, i) => {
   o.setFreshness(fresh);
   scene.add(o.root);
   inst.push(o);
-  const ped = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.55, 0.1, 32), new THREE.MeshStandardMaterial({ color: 0x2a3160 }));
+  const ped = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.5, 0.55, 0.1, 32),
+    new THREE.MeshStandardMaterial({ color: 0x2a3160 }),
+  );
   ped.position.set(x, -0.05, z);
   ped.receiveShadow = true;
   scene.add(ped);
@@ -62,7 +65,11 @@ if (!only && from === 0 && missing.length) console.warn('Missing object keys:', 
 
 const cam = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 100);
 const w = Math.min(cols, list.length) * spacing;
-const dist = Math.max(w / 2 / Math.tan((cam.fov * Math.PI) / 360) / cam.aspect, (rows * spacing) / 2 / Math.tan((cam.fov * Math.PI) / 360)) + 1.2;
+const dist =
+  Math.max(
+    w / 2 / Math.tan((cam.fov * Math.PI) / 360) / cam.aspect,
+    (rows * spacing) / 2 / Math.tan((cam.fov * Math.PI) / 360),
+  ) + 1.2;
 cam.position.set(0, dist * 0.55 + 0.6, dist * 0.85);
 cam.lookAt(0, 0.35, 0);
 

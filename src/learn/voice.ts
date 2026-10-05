@@ -15,7 +15,10 @@ interface RecognitionLike {
 type RecognitionCtor = new () => RecognitionLike;
 
 function ctor(): RecognitionCtor | undefined {
-  const w = window as unknown as { SpeechRecognition?: RecognitionCtor; webkitSpeechRecognition?: RecognitionCtor };
+  const w = window as unknown as {
+    SpeechRecognition?: RecognitionCtor;
+    webkitSpeechRecognition?: RecognitionCtor;
+  };
   return w.SpeechRecognition ?? w.webkitSpeechRecognition;
 }
 
@@ -40,7 +43,12 @@ export function listenOnce(lang: Lang): Promise<string[]> {
       resolve(alts);
     };
     r.onerror = (e) => {
-      const err: VoiceError = e.error === 'not-allowed' || e.error === 'service-not-allowed' ? 'denied' : e.error === 'no-speech' ? 'no-speech' : 'error';
+      const err: VoiceError =
+        e.error === 'not-allowed' || e.error === 'service-not-allowed'
+          ? 'denied'
+          : e.error === 'no-speech'
+            ? 'no-speech'
+            : 'error';
       reject(err);
     };
     r.onend = () => {
@@ -54,11 +62,13 @@ export function listenOnce(lang: Lang): Promise<string[]> {
   });
 }
 
+const ZERO_WIDTH = new RegExp('[' + String.fromCharCode(0x200b) + '-' + String.fromCharCode(0x200d) + String.fromCharCode(0xfeff) + ']', 'g');
+
 export function normalize(s: string): string {
   return s
     .normalize('NFC')
     .toLowerCase()
-    .replace(/[​-‍﻿]/g, '')
+    .replace(ZERO_WIDTH, '')
     .replace(/[^\p{L}\p{M}\p{N}\s]/gu, ' ')
     .replace(/\s+/g, ' ')
     .trim();
@@ -70,7 +80,11 @@ function levenshtein(a: string[], b: string[]): number {
   for (let i = 1; i <= a.length; i++)
     for (let j = 1; j <= b.length; j++) {
       const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-      (dp[i] as number[])[j] = Math.min((dp[i - 1] as number[])[j]! + 1, (dp[i] as number[])[j - 1]! + 1, (dp[i - 1] as number[])[j - 1]! + cost);
+      (dp[i] as number[])[j] = Math.min(
+        (dp[i - 1] as number[])[j]! + 1,
+        (dp[i] as number[])[j - 1]! + 1,
+        (dp[i - 1] as number[])[j - 1]! + cost,
+      );
     }
   return (dp[a.length] as number[])[b.length] as number;
 }

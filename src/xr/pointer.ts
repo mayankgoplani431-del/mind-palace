@@ -6,7 +6,7 @@ export interface InteractorHandlers {
   /** Fired when the thing under the primary pointer changes (null = nothing). */
   hover?(id: string | null, source: PointerSource): void;
   /** Click / tap / trigger on an object. */
-  select?(id: string, source: PointerSource): void;
+  select?(id: string, source: PointerSource, point?: THREE.Vector3): void;
   /** Return true to accept the drag. */
   dragStart?(id: string, point: THREE.Vector3, source: PointerSource): boolean;
   dragMove?(id: string, point: THREE.Vector3, source: PointerSource): void;
@@ -130,7 +130,7 @@ export class Interactor {
     this.pressStart = null;
     if (!s || Math.hypot(px.x - s.x, px.y - s.y) > CLICK_PX) return;
     const hit = this.cast();
-    if (hit) this.handlers.select?.(hit.id, source);
+    if (hit) this.handlers.select?.(hit.id, source, hit.point);
     else this.handlers.background?.(source);
   }
 
@@ -142,7 +142,12 @@ export class Interactor {
   private readonly xrDown = new Map<PointerSource, { id: string | null }>();
 
   /** Call every frame per controller. `origin`/`dir` are in world space. Returns the ray hit point (for the cursor). */
-  xr(source: PointerSource, origin: THREE.Vector3, dir: THREE.Vector3, pressed: boolean): THREE.Vector3 | null {
+  xr(
+    source: PointerSource,
+    origin: THREE.Vector3,
+    dir: THREE.Vector3,
+    pressed: boolean,
+  ): THREE.Vector3 | null {
     this.ray.ray.set(origin, dir.clone().normalize());
     this.ray.far = 30;
     const hit = this.cast();
@@ -162,7 +167,7 @@ export class Interactor {
         if (hit) {
           if (this.draggable?.(hit.id) && this.handlers.dragStart?.(hit.id, hit.point, source)) {
             this.drag = { id: hit.id, source, dist: Math.max(0.5, hit.dist), planeY: DRAG_PLANE_Y };
-          } else this.handlers.select?.(hit.id, source);
+          } else this.handlers.select?.(hit.id, source, hit.point);
         } else this.handlers.background?.(source);
       }
     }

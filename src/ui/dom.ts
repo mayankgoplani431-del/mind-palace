@@ -11,7 +11,11 @@ export interface Props {
 }
 
 /** Tiny hyperscript helper so UI code stays readable without a framework. */
-export function h<K extends keyof HTMLElementTagNameMap>(tag: K, props: Props = {}, ...children: Child[]): HTMLElementTagNameMap[K] {
+export function h<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+  props: Props = {},
+  ...children: Child[]
+): HTMLElementTagNameMap[K] {
   const el = document.createElement(tag);
   if (props.class) el.className = props.class;
   if (props.text !== undefined) el.textContent = props.text;

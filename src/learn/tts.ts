@@ -2,7 +2,8 @@ import type { Lang } from '../extract/types';
 
 const LOCALE: Record<Lang, string> = { en: 'en-IN', hi: 'hi-IN', mr: 'mr-IN' };
 
-export const ttsSupported = (): boolean => typeof speechSynthesis !== 'undefined' && typeof SpeechSynthesisUtterance !== 'undefined';
+export const ttsSupported = (): boolean =>
+  typeof speechSynthesis !== 'undefined' && typeof SpeechSynthesisUtterance !== 'undefined';
 
 let cachedVoices: SpeechSynthesisVoice[] = [];
 

@@ -535,7 +535,7 @@ body.hc .btn.primary {
 .toast-host {
   position: absolute;
   left: 50%;
-  top: 14px;
+  top: 64px;
   transform: translateX(-50%);
   display: grid;
   gap: 6px;
@@ -595,4 +595,34 @@ table.t th {
 .timer {
   font-variant-numeric: tabular-nums;
   font-weight: 700;
+}
+
+@media (max-width: 1180px) {
+  .hud-btns .btn .lbl {
+    display: none;
+  }
+  .hud-btns .btn {
+    min-width: 40px;
+    padding: 6px 8px;
+  }
+}
+@media (max-width: 700px) {
+  .hud-left {
+    width: min(190px, 46vw);
+    top: 100px;
+  }
+  .hud-left .rings {
+    display: none;
+  }
+  .minimap {
+    width: 120px;
+    height: 120px;
+  }
+  .concept-card {
+    bottom: 8px;
+    max-height: 52%;
+  }
+  .joystick {
+    bottom: 150px;
+  }
 }

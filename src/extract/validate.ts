@@ -12,12 +12,18 @@ export const quizSchema = z
     options: z.array(z.string().trim().min(1)).length(4),
     answerIndex: z.number().int().min(0).max(3),
   })
-  .refine((q) => new Set(q.options.map((o) => o.toLowerCase())).size === 4, { message: 'quiz options must be distinct' });
+  .refine((q) => new Set(q.options.map((o) => o.toLowerCase())).size === 4, {
+    message: 'quiz options must be distinct',
+  });
 
 export const conceptSchema = z.object({
   id: z.string().min(1),
   title: z.string().trim().min(1).max(120),
-  summary: z.string().trim().min(1).refine((s) => words(s) <= 25, { message: 'summary must be at most 25 words' }),
+  summary: z
+    .string()
+    .trim()
+    .min(1)
+    .refine((s) => words(s) <= 25, { message: 'summary must be at most 25 words' }),
   keywords: z.array(z.string().trim().min(1)).min(1).max(8),
   objectKey: z.enum(OBJECT_KEYS),
   mnemonic: z.string().trim().min(1),
@@ -73,7 +79,14 @@ export function repairLlmOutput(raw: unknown, lang: Lang): unknown {
         const summary = typeof o.summary === 'string' ? clipWords(o.summary, 25) : o.summary;
         let key = typeof o.objectKey === 'string' ? o.objectKey.trim().toLowerCase() : '';
         if (!(OBJECT_KEYS as readonly string[]).includes(key) || used.has(key)) {
-          key = pickObjectKey(title, keywords, typeof summary === 'string' ? summary : '', lang, used, title + i);
+          key = pickObjectKey(
+            title,
+            keywords,
+            typeof summary === 'string' ? summary : '',
+            lang,
+            used,
+            title + i,
+          );
         }
         used.add(key);
         const quiz = asRecord(o.quiz);
@@ -83,11 +96,19 @@ export function repairLlmOutput(raw: unknown, lang: Lang): unknown {
           id: typeof o.id === 'string' && o.id ? o.id : `c${i + 1}`,
           summary,
           objectKey: key,
-          quiz: quiz ? { ...quiz, answerIndex: Number.isFinite(answerIndex) ? Math.trunc(answerIndex) : quiz.answerIndex } : o.quiz,
+          quiz: quiz
+            ? {
+                ...quiz,
+                answerIndex: Number.isFinite(answerIndex) ? Math.trunc(answerIndex) : quiz.answerIndex,
+              }
+            : o.quiz,
         };
       })
     : concepts;
-  const lg = typeof root.language === 'string' ? (LANG_ALIASES[root.language.trim().toLowerCase()] ?? root.language) : lang;
+  const lg =
+    typeof root.language === 'string'
+      ? (LANG_ALIASES[root.language.trim().toLowerCase()] ?? root.language)
+      : lang;
   return { ...root, language: lg, concepts: fixed };
 }
 

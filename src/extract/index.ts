@@ -1,4 +1,12 @@
-import type { ConceptExtractor, ExtractResult, Lang, LangChoice, PalaceData, RoomSpec, StyleKey } from './types';
+import type {
+  ConceptExtractor,
+  ExtractResult,
+  Lang,
+  LangChoice,
+  PalaceData,
+  RoomSpec,
+  StyleKey,
+} from './types';
 import { HeuristicExtractor } from './heuristic';
 import { LlmError, LlmExtractor, type Complete, type Fetch, type LlmConfig } from './llm/common';
 import { anthropicComplete } from './llm/anthropic';
@@ -28,7 +36,9 @@ function terminate(s: string, lang: Lang): string {
 }
 
 function serialize(heading: string | null, units: Unit[], lang: Lang): string {
-  const body = units.map((u) => (u.bold ? `**${terminate(u.text, lang)}**` : terminate(u.text, lang))).join('\n');
+  const body = units
+    .map((u) => (u.bold ? `**${terminate(u.text, lang)}**` : terminate(u.text, lang)))
+    .join('\n');
   return heading ? `# ${heading}\n${body}` : body;
 }
 
@@ -43,7 +53,8 @@ function chunk<T>(arr: T[], parts: number): T[][] {
 export function planSections(text: string, lang: Lang): PlannedSection[] {
   const units = toUnits(text);
   let sections: Section[] = toSections(units);
-  if (sections.length === 0) sections = [{ heading: null, units: units.filter((u) => u.kind === 'sentence') }];
+  if (sections.length === 0)
+    sections = [{ heading: null, units: units.filter((u) => u.kind === 'sentence') }];
 
   // split oversized sections
   const split: Section[] = [];
@@ -60,7 +71,11 @@ export function planSections(text: string, lang: Lang): PlannedSection[] {
   const merged: Section[] = [];
   for (const s of split) {
     const prev = merged[merged.length - 1];
-    if (s.units.length < MIN_SENTENCES_PER_ROOM && prev && prev.units.length + s.units.length <= SPLIT_ABOVE) {
+    if (
+      s.units.length < MIN_SENTENCES_PER_ROOM &&
+      prev &&
+      prev.units.length + s.units.length <= SPLIT_ABOVE
+    ) {
       prev.units = [...prev.units, ...s.units];
     } else merged.push({ heading: s.heading, units: [...s.units] });
   }
@@ -84,12 +99,19 @@ export function planSections(text: string, lang: Lang): PlannedSection[] {
     a.units = [...a.units, ...b.units];
     merged.splice(best + 1, 1);
   }
-  return merged.map((s) => ({ heading: s.heading, text: serialize(s.heading, s.units, lang), sentences: s.units.length }));
+  return merged.map((s) => ({
+    heading: s.heading,
+    text: serialize(s.heading, s.units, lang),
+    sentences: s.units.length,
+  }));
 }
 
-const SCIENCE = /physic|chemi|science|atom|energy|force|electric|magnet|भौतिक|रसायन|विज्ञान|ऊर्जा|बल\b|विद्युत|चुंबक|चुंबकीय|ऊर्जा/i;
-const HISTORY = /histor|empire|war|king|dynast|revolution|freedom|independ|इतिहास|साम्राज्य|युद्ध|राजा|स्वातंत्र्य|स्वतंत्रता|मराठ|लढा|क्रांति/i;
-const NATURE = /biolog|plant|cell|animal|ecosystem|nature|geograph|environment|जीव|वनस्पती|पौधे|कोशिका|प्राणी|निसर्ग|भूगोल|पर्यावरण/i;
+const SCIENCE =
+  /physic|chemi|science|atom|energy|force|electric|magnet|भौतिक|रसायन|विज्ञान|ऊर्जा|बल\b|विद्युत|चुंबक|चुंबकीय|ऊर्जा/i;
+const HISTORY =
+  /histor|empire|war|king|dynast|revolution|freedom|independ|इतिहास|साम्राज्य|युद्ध|राजा|स्वातंत्र्य|स्वतंत्रता|मराठ|लढा|क्रांति/i;
+const NATURE =
+  /biolog|plant|cell|animal|ecosystem|nature|geograph|environment|जीव|वनस्पती|पौधे|कोशिका|प्राणी|निसर्ग|भूगोल|पर्यावरण/i;
 
 export function pickStyle(topic: string, text: string, seed: number): StyleKey {
   const probe = `${topic} ${text.slice(0, 2000)}`;
@@ -147,14 +169,13 @@ export async function buildPalace(text: string, opts: BuildOptions): Promise<Bui
         res = await primary.extract(sec.text, { lang, idPrefix });
       } catch (e) {
         llmOk = false; // don't keep hammering a broken key / offline network
-        const err = e instanceof LlmError ? e : new LlmError('server', e instanceof Error ? e.message : String(e));
+        const err =
+          e instanceof LlmError ? e : new LlmError('server', e instanceof Error ? e.message : String(e));
         warnings.push({ kind: err.kind, message: err.message });
       }
     }
     if (!res) {
-      const others = sections
-        .filter((_, j) => j !== i)
-        .flatMap((s) => (s.heading ? [s.heading] : []));
+      const others = sections.filter((_, j) => j !== i).flatMap((s) => (s.heading ? [s.heading] : []));
       res = await new HeuristicExtractor(others).extract(sec.text, { lang, idPrefix });
     }
     // every result passes the same strict schema, whichever engine made it
@@ -163,7 +184,8 @@ export async function buildPalace(text: string, opts: BuildOptions): Promise<Bui
     results.push(v.value);
   }
   opts.onProgress?.(sections.length, sections.length);
-  if (opts.engine.kind === 'llm' && !llmOk) warnings.push({ kind: 'fallback', message: 'Used the offline engine instead.' });
+  if (opts.engine.kind === 'llm' && !llmOk)
+    warnings.push({ kind: 'fallback', message: 'Used the offline engine instead.' });
 
   const rooms: RoomSpec[] = results.map((r, i) => ({
     id: `r${i + 1}`,
@@ -171,7 +193,8 @@ export async function buildPalace(text: string, opts: BuildOptions): Promise<Bui
     concepts: r.concepts,
   }));
   const firstHeading = toUnits(text).find((u) => u.kind === 'heading')?.text;
-  const topic = rooms.length === 1 ? (rooms[0] as RoomSpec).topic : (firstHeading ?? (rooms[0] as RoomSpec).topic);
+  const topic =
+    rooms.length === 1 ? (rooms[0] as RoomSpec).topic : (firstHeading ?? (rooms[0] as RoomSpec).topic);
   const seed = hashString(`${lang}|${text.trim()}`);
   const style = !opts.style || opts.style === 'auto' ? pickStyle(topic, text, seed) : opts.style;
   const palace: PalaceData = {

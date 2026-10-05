@@ -3,7 +3,12 @@ import { clipWords, splitSentences, toSections, toUnits } from '../src/input/tex
 
 describe('splitSentences', () => {
   it('splits English on . ! ?', () => {
-    expect(splitSentences('One is here. Two is there! Is three? Yes.')).toEqual(['One is here.', 'Two is there!', 'Is three?', 'Yes.']);
+    expect(splitSentences('One is here. Two is there! Is three? Yes.')).toEqual([
+      'One is here.',
+      'Two is there!',
+      'Is three?',
+      'Yes.',
+    ]);
   });
   it('splits on the Devanagari danda, even without a following space', () => {
     expect(splitSentences('कोशिका जीवन की इकाई है।केंद्रक नियंत्रण केंद्र है। डीएनए अणु है॥')).toEqual([
@@ -24,10 +29,15 @@ describe('splitSentences', () => {
 });
 
 describe('toUnits / toSections', () => {
-  const md = '# Title\n\n## Part A\n- **Term**: a definition that is long enough to count here.\n- Plain bullet sentence number two.\n\n## Part B\nSome text in part B. More text in part B.\n';
+  const md =
+    '# Title\n\n## Part A\n- **Term**: a definition that is long enough to count here.\n- Plain bullet sentence number two.\n\n## Part B\nSome text in part B. More text in part B.\n';
   it('finds headings and bold markers', () => {
     const units = toUnits(md);
-    expect(units.filter((u) => u.kind === 'heading').map((u) => u.text)).toEqual(['Title', 'Part A', 'Part B']);
+    expect(units.filter((u) => u.kind === 'heading').map((u) => u.text)).toEqual([
+      'Title',
+      'Part A',
+      'Part B',
+    ]);
     expect(units.find((u) => u.text.startsWith('Term'))?.bold).toBe(true);
   });
   it('groups sentences under headings and drops empty ones', () => {

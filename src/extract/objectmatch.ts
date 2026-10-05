@@ -62,7 +62,6 @@ export function rankObjects(
 
 /** Deterministic fallback: hash `salt` into the catalogue, probing past objects already used. */
 export function hashObjectKey(used: ReadonlySet<string>, salt: string): string {
-
   const pool = OBJECT_KEYS.filter((k) => k !== FALLBACK_OBJECT_KEY);
   const start = hashString(salt) % pool.length;
   for (let i = 0; i < pool.length; i++) {
@@ -91,7 +90,11 @@ export function assignObjects(
   lang: Lang,
 ): string[] {
   const pairs: Array<{ i: number; key: string; score: number }> = [];
-  items.forEach((it, i) => rankObjects(it.title, it.keywords, it.sentence, lang).forEach((r) => pairs.push({ i, key: r.key, score: r.score })));
+  items.forEach((it, i) =>
+    rankObjects(it.title, it.keywords, it.sentence, lang).forEach((r) =>
+      pairs.push({ i, key: r.key, score: r.score }),
+    ),
+  );
   pairs.sort((a, b) => b.score - a.score || a.i - b.i);
   const out: Array<string | undefined> = new Array(items.length).fill(undefined);
   const used = new Set<string>();

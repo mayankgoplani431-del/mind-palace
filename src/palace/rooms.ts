@@ -68,19 +68,48 @@ export function makeAssets(theme: ThemeDef, shadows: boolean): Assets {
   const d = new Disposer();
   const tile = d.add(tileTexture(theme));
   const floor = d.add(
-    new THREE.MeshStandardMaterial({ map: tile, roughness: theme.roughness, metalness: theme.metalness, color: 0xffffff }),
+    new THREE.MeshStandardMaterial({
+      map: tile,
+      roughness: theme.roughness,
+      metalness: theme.metalness,
+      color: 0xffffff,
+    }),
   );
   const wall = d.add(
-    new THREE.MeshStandardMaterial({ color: theme.wall, roughness: Math.min(1, theme.roughness + 0.1), metalness: theme.metalness * 0.6, side: THREE.DoubleSide }),
+    new THREE.MeshStandardMaterial({
+      color: theme.wall,
+      roughness: Math.min(1, theme.roughness + 0.1),
+      metalness: theme.metalness * 0.6,
+      side: THREE.DoubleSide,
+    }),
   );
-  const trim = d.add(new THREE.MeshStandardMaterial({ color: theme.trim, roughness: 0.4, metalness: theme.key === 'zen' ? 0 : 0.6 }));
-  const pedestalTop = d.add(new THREE.MeshStandardMaterial({ color: theme.pedestal, roughness: 0.5, metalness: theme.metalness * 0.5 }));
+  const trim = d.add(
+    new THREE.MeshStandardMaterial({
+      color: theme.trim,
+      roughness: 0.4,
+      metalness: theme.key === 'zen' ? 0 : 0.6,
+    }),
+  );
+  const pedestalTop = d.add(
+    new THREE.MeshStandardMaterial({
+      color: theme.pedestal,
+      roughness: 0.5,
+      metalness: theme.metalness * 0.5,
+    }),
+  );
   const accentCache = new Map<string, THREE.MeshStandardMaterial>();
   const accentMat = (h: number, intensity = 1.2): THREE.MeshStandardMaterial => {
     const key = `${h}:${intensity}`;
     let m = accentCache.get(key);
     if (!m) {
-      m = d.add(new THREE.MeshStandardMaterial({ color: h, emissive: h, emissiveIntensity: intensity, roughness: 0.4 }));
+      m = d.add(
+        new THREE.MeshStandardMaterial({
+          color: h,
+          emissive: h,
+          emissiveIntensity: intensity,
+          roughness: 0.4,
+        }),
+      );
       accentCache.set(key, m);
     }
     return m;
@@ -127,11 +156,24 @@ function enableShadow(o: THREE.Object3D, cast: boolean, receive: boolean): void 
 function roundWall(radius: number, gaps: Gap[], a: Assets, parent: THREE.Group): void {
   for (const arc of arcs(gaps)) {
     const segs = Math.max(8, Math.ceil((72 * arc.length) / TAU));
-    const wall = new THREE.Mesh(a.d.add(new THREE.CylinderGeometry(radius, radius, WALL_HEIGHT, segs, 1, true, arc.start, arc.length)), a.wall);
+    const wall = new THREE.Mesh(
+      a.d.add(new THREE.CylinderGeometry(radius, radius, WALL_HEIGHT, segs, 1, true, arc.start, arc.length)),
+      a.wall,
+    );
     wall.position.y = WALL_HEIGHT / 2;
-    const cornice = new THREE.Mesh(a.d.add(new THREE.CylinderGeometry(radius + 0.12, radius + 0.12, 0.3, segs, 1, true, arc.start, arc.length)), a.trim);
+    const cornice = new THREE.Mesh(
+      a.d.add(
+        new THREE.CylinderGeometry(radius + 0.12, radius + 0.12, 0.3, segs, 1, true, arc.start, arc.length),
+      ),
+      a.trim,
+    );
     cornice.position.y = WALL_HEIGHT - 0.15;
-    const base = new THREE.Mesh(a.d.add(new THREE.CylinderGeometry(radius - 0.06, radius - 0.06, 0.35, segs, 1, true, arc.start, arc.length)), a.trim);
+    const base = new THREE.Mesh(
+      a.d.add(
+        new THREE.CylinderGeometry(radius - 0.06, radius - 0.06, 0.35, segs, 1, true, arc.start, arc.length),
+      ),
+      a.trim,
+    );
     base.position.y = 0.175;
     cornice.material = a.trim;
     parent.add(wall, cornice, base);
@@ -149,7 +191,10 @@ function doorFrame(radius: number, heading: number, a: Assets, parent: THREE.Gro
   r.position.set(halfW, WALL_HEIGHT * 0.39, 0);
   const lintel = new THREE.Mesh(a.d.add(new THREE.BoxGeometry(halfW * 2 + 0.8, 0.45, 0.55)), a.trim);
   lintel.position.set(0, WALL_HEIGHT * 0.78 + 0.1, 0);
-  const glow = new THREE.Mesh(a.d.add(new THREE.BoxGeometry(halfW * 2, 0.08, 0.1)), a.accentMat(a.theme.accent, 2));
+  const glow = new THREE.Mesh(
+    a.d.add(new THREE.BoxGeometry(halfW * 2, 0.08, 0.1)),
+    a.accentMat(a.theme.accent, 2),
+  );
   glow.position.set(0, WALL_HEIGHT * 0.78 - 0.15, 0.2);
   g.add(l, r, lintel, glow);
   // local +z points outward from the room centre along `heading`
@@ -166,13 +211,34 @@ function circleFloor(radius: number, a: Assets, parent: THREE.Group, accent: num
   const f = new THREE.Mesh(g, a.floor);
   f.receiveShadow = true;
   parent.add(f);
-  const ring = new THREE.Mesh(a.d.add(new THREE.RingGeometry(radius - 1.05, radius - 0.85, 72)), a.accentMat(accent, 0.9));
+  const ring = new THREE.Mesh(
+    a.d.add(new THREE.RingGeometry(radius - 1.05, radius - 0.85, 72)),
+    a.accentMat(accent, 0.45),
+  );
   ring.rotation.x = -Math.PI / 2;
   ring.position.y = 0.012;
-  const inner = new THREE.Mesh(a.d.add(new THREE.RingGeometry(1.6, 1.75, 64)), a.accentMat(accent, 0.6));
+  const inner = new THREE.Mesh(a.d.add(new THREE.RingGeometry(1.6, 1.75, 64)), a.accentMat(accent, 0.3));
   inner.rotation.x = -Math.PI / 2;
   inner.position.y = 0.012;
   parent.add(ring, inner);
+}
+
+let moteTex: THREE.CanvasTexture | null = null;
+function softDot(): THREE.CanvasTexture {
+  if (!moteTex) {
+    const c = document.createElement('canvas');
+    c.width = c.height = 32;
+    const x = c.getContext('2d');
+    if (x) {
+      const g = x.createRadialGradient(16, 16, 0, 16, 16, 16);
+      g.addColorStop(0, 'rgba(255,255,255,1)');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = g;
+      x.fillRect(0, 0, 32, 32);
+    }
+    moteTex = new THREE.CanvasTexture(c);
+  }
+  return moteTex;
 }
 
 function dustMotes(radius: number, color: number, count: number, a: Assets, seed: number): THREE.Points {
@@ -188,7 +254,15 @@ function dustMotes(radius: number, color: number, count: number, a: Assets, seed
   const g = a.d.add(new THREE.BufferGeometry());
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   const m = a.d.add(
-    new THREE.PointsMaterial({ color, size: 0.07, transparent: true, opacity: 0.75, depthWrite: false, blending: THREE.AdditiveBlending }),
+    new THREE.PointsMaterial({
+      color,
+      size: 0.09,
+      map: softDot(),
+      transparent: true,
+      opacity: 0.6,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    }),
   );
   const p = new THREE.Points(g, m);
   p.frustumCulled = false;
@@ -196,7 +270,13 @@ function dustMotes(radius: number, color: number, count: number, a: Assets, seed
 }
 
 /** Decorative props around the wall, themed. Returns animated parts. */
-function addProps(room: { radius: number; doorAngle: number; count: number }, a: Assets, parent: THREE.Group, accent: number, seed: number): THREE.Object3D[] {
+function addProps(
+  room: { radius: number; doorAngle: number; count: number },
+  a: Assets,
+  parent: THREE.Group,
+  accent: number,
+  seed: number,
+): THREE.Object3D[] {
   const animated: THREE.Object3D[] = [];
   const { radius, doorAngle, count } = room;
   const step = TAU / (count + 1);
@@ -232,7 +312,10 @@ function addProps(room: { radius: number; doorAngle: number; count: number }, a:
       bowl.position.set(x, 1.1, z);
       const stand = new THREE.Mesh(a.d.add(new THREE.CylinderGeometry(0.05, 0.08, 1.0, 8)), a.trim);
       stand.position.set(x, 0.55, z);
-      const flame = new THREE.Mesh(a.d.add(new THREE.ConeGeometry(0.17, 0.5, 10)), a.accentMat(0xff8a2a, 2.4));
+      const flame = new THREE.Mesh(
+        a.d.add(new THREE.ConeGeometry(0.17, 0.5, 10)),
+        a.accentMat(0xff8a2a, 2.4),
+      );
       flame.position.set(x, 1.47, z);
       animated.push(flame);
       parent.add(bowl, stand, flame);
@@ -256,7 +339,10 @@ function addProps(room: { radius: number; doorAngle: number; count: number }, a:
     parent.add(tubes, plates);
     const holo = new THREE.Group();
     for (let i = 0; i < 3; i++) {
-      const ring = new THREE.Mesh(a.d.add(new THREE.TorusGeometry(0.9 + i * 0.35, 0.025, 8, 64)), a.accentMat(accent, 1.8));
+      const ring = new THREE.Mesh(
+        a.d.add(new THREE.TorusGeometry(0.9 + i * 0.35, 0.025, 8, 64)),
+        a.accentMat(accent, 1.8),
+      );
       ring.rotation.x = Math.PI / 2 + i * 0.5;
       holo.add(ring);
     }
@@ -316,9 +402,20 @@ export interface PedestalParts {
 
 export function makePedestal(a: Assets, accent: number): PedestalParts {
   const group = new THREE.Group();
-  const bodyMat = a.d.add(new THREE.MeshStandardMaterial({ color: a.theme.pedestal, roughness: 0.55, metalness: a.theme.metalness * 0.5 }));
-  const ringMat = a.d.add(new THREE.MeshStandardMaterial({ color: accent, emissive: accent, emissiveIntensity: 1, roughness: 0.4 }));
-  const body = new THREE.Mesh(a.d.add(new THREE.CylinderGeometry(0.42, 0.52, PEDESTAL_HEIGHT - 0.08, 24)), bodyMat);
+  const bodyMat = a.d.add(
+    new THREE.MeshStandardMaterial({
+      color: a.theme.pedestal,
+      roughness: 0.55,
+      metalness: a.theme.metalness * 0.5,
+    }),
+  );
+  const ringMat = a.d.add(
+    new THREE.MeshStandardMaterial({ color: accent, emissive: accent, emissiveIntensity: 1, roughness: 0.4 }),
+  );
+  const body = new THREE.Mesh(
+    a.d.add(new THREE.CylinderGeometry(0.42, 0.52, PEDESTAL_HEIGHT - 0.08, 24)),
+    bodyMat,
+  );
   body.position.y = (PEDESTAL_HEIGHT - 0.08) / 2;
   const top = new THREE.Mesh(a.d.add(new THREE.CylinderGeometry(0.52, 0.52, 0.08, 24)), a.trim);
   top.position.y = PEDESTAL_HEIGHT - 0.04;
@@ -327,7 +424,15 @@ export function makePedestal(a: Assets, accent: number): PedestalParts {
   ring.position.y = PEDESTAL_HEIGHT + 0.005;
   group.add(body, top, ring);
   enableShadow(group, a.shadows, true);
-  return { group, body, ring, bodyMat, ringMat, baseBody: bodyMat.color.clone(), baseRing: ringMat.color.clone() };
+  return {
+    group,
+    body,
+    ring,
+    bodyMat,
+    ringMat,
+    baseBody: bodyMat.color.clone(),
+    baseRing: ringMat.color.clone(),
+  };
 }
 
 export interface RoomParts {
@@ -336,14 +441,26 @@ export interface RoomParts {
   animated: THREE.Object3D[];
 }
 
-export function buildRoom(room: RoomLayout, count: number, a: Assets, accent: number, seed: number): RoomParts {
+export function buildRoom(
+  room: RoomLayout,
+  count: number,
+  a: Assets,
+  accent: number,
+  seed: number,
+): RoomParts {
   const group = new THREE.Group();
   group.position.set(room.center.x, 0, room.center.z);
   circleFloor(room.radius, a, group, accent);
   const half = Math.asin(Math.min(0.9, (CORRIDOR_WIDTH / 2 + 0.1) / room.radius));
   roundWall(room.radius, [{ c: room.doorAngle, h: half }], a, group);
   doorFrame(room.radius, room.doorAngle, a, group);
-  const animated = addProps({ radius: room.radius, doorAngle: room.doorAngle, count }, a, group, accent, seed);
+  const animated = addProps(
+    { radius: room.radius, doorAngle: room.doorAngle, count },
+    a,
+    group,
+    accent,
+    seed,
+  );
   const motes = dustMotes(room.radius, accent, 70, a, seed ^ 0x51);
   group.add(motes);
   return { group, motes, animated };
@@ -353,16 +470,24 @@ export function buildFoyer(doorAngles: number[], a: Assets, accent: number): Roo
   const group = new THREE.Group();
   circleFloor(FOYER_RADIUS, a, group, accent);
   const half = Math.asin((CORRIDOR_WIDTH / 2 + 0.1) / FOYER_RADIUS);
-  roundWall(FOYER_RADIUS, doorAngles.map((c) => ({ c, h: half })), a, group);
+  roundWall(
+    FOYER_RADIUS,
+    doorAngles.map((c) => ({ c, h: half })),
+    a,
+    group,
+  );
   for (const ang of doorAngles) doorFrame(FOYER_RADIUS, ang, a, group);
   // armillary sphere at the centre
-  const core = new THREE.Mesh(a.d.add(new THREE.SphereGeometry(0.28, 24, 16)), a.accentMat(accent, 2));
+  const core = new THREE.Mesh(a.d.add(new THREE.SphereGeometry(0.28, 24, 16)), a.accentMat(accent, 1.1));
   core.position.y = 1.7;
   const plinth = new THREE.Mesh(a.d.add(new THREE.CylinderGeometry(0.7, 0.85, 0.9, 28)), a.pedestalTop);
   plinth.position.y = 0.45;
   const armillary = new THREE.Group();
   for (let i = 0; i < 3; i++) {
-    const ring = new THREE.Mesh(a.d.add(new THREE.TorusGeometry(0.55 + i * 0.16, 0.025, 8, 56)), a.accentMat(accent, 1.4));
+    const ring = new THREE.Mesh(
+      a.d.add(new THREE.TorusGeometry(0.55 + i * 0.16, 0.025, 8, 56)),
+      a.accentMat(accent, 0.7),
+    );
     ring.rotation.set(i * 1.05, i * 0.6, 0);
     armillary.add(ring);
   }

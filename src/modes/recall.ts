@@ -41,7 +41,10 @@ export function computeScore(items: ItemState[], timeSec: number): RecallScore {
   const accuracy = pts / n;
   const hints = items.filter((i) => i.hinted).length;
   const perItem = timeSec / n;
-  const timeFactor = Math.min(1, Math.max(0, 1 - (perItem - FAST_SEC_PER_ITEM) / (SLOW_SEC_PER_ITEM - FAST_SEC_PER_ITEM)));
+  const timeFactor = Math.min(
+    1,
+    Math.max(0, 1 - (perItem - FAST_SEC_PER_ITEM) / (SLOW_SEC_PER_ITEM - FAST_SEC_PER_ITEM)),
+  );
   const raw = 70 * accuracy + 30 * timeFactor - 5 * hints;
   return {
     accuracy,
@@ -59,12 +62,17 @@ export class RecallSession {
   private readonly started: number;
   private ended: number | null = null;
 
-  constructor(
-    concepts: Array<{ id: string; title: string }>,
-    now: number,
-  ) {
+  constructor(concepts: Array<{ id: string; title: string }>, now: number) {
     for (const c of concepts) {
-      this.items.set(c.id, { id: c.id, title: c.title, wrong: 0, hinted: false, placed: false, tries: 0, placedAtMs: null });
+      this.items.set(c.id, {
+        id: c.id,
+        title: c.title,
+        wrong: 0,
+        hinted: false,
+        placed: false,
+        tries: 0,
+        placedAtMs: null,
+      });
     }
     this.started = now;
   }

@@ -155,7 +155,7 @@ export function mesh(
 
 export function grp(...children: THREE.Object3D[]): THREE.Group {
   const g = new THREE.Group();
-  g.add(...children);
+  for (const c of children) g.add(c);
   return g;
 }
 

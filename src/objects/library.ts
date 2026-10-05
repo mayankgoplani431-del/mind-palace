@@ -3,8 +3,9 @@ import type { ObjectDef } from './types';
 import { FALLBACK_OBJECT_KEY } from './keys';
 import { scienceObjects } from './builders/science';
 import { cultureObjects } from './builders/culture';
+import { natureObjects } from './builders/nature';
 
-export const OBJECTS: ObjectDef[] = [...scienceObjects, ...cultureObjects];
+export const OBJECTS: ObjectDef[] = [...scienceObjects, ...cultureObjects, ...natureObjects];
 
 const byKey = new Map<string, ObjectDef>(OBJECTS.map((o) => [o.key, o]));
 
